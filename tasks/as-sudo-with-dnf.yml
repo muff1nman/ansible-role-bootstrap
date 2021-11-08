@@ -1,0 +1,9 @@
+---
+- name: Install extra python2 libaries
+  raw: dnf -y install python python2-dnf python-dnf-plugins-core python-dnf-plugins-extras-common libselinux-python
+  when: "'2' in ansible_python_interpreter"
+- name: Install extra python3 libaries
+  raw: dnf -y install python3-dnf-plugins-core python3-dnf-plugins-extras-common python3-libselinux python3-libsemanage
+  when: "'3' in ansible_python_interpreter"
+- name: Upgrade
+  raw: dnf -y upgrade

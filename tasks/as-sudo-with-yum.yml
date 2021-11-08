@@ -1,0 +1,9 @@
+---
+- name: Install extra python2 libaries
+  raw: yum -y install libselinux-python libsemanage-python
+  when: "'2' in ansible_python_interpreter"
+- name: Install extra python3 libaries
+  raw: yum -y install python3-libselinux
+  when: "'3' in ansible_python_interpreter"
+- name: Yum upgrade
+  raw: yum -y upgrade

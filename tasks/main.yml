@@ -1,0 +1,34 @@
+---
+- name: Check if bootstraped
+  stat:
+    path: /etc/demaria-bootstrap
+  register: boot_reg
+- when: not boot_reg.stat.exists 
+  block:
+  - local_action: stat path="{{ role_path }}/tasks/as-sudo-with-dnf.yml"
+    register: dnf_task
+    become: no
+  - name: Check if DNF is installed
+    command: which dnf
+    register: dnf_command
+    failed_when: False
+    changed_when: False
+  - name: Running Dnf Tasks
+    include_tasks: "{{ dnf_task.stat.path }}"
+    when: dnf_task.stat.exists and dnf_command.rc == 0
+  - local_action: stat path="{{ role_path }}/tasks/as-sudo-with-yum.yml"
+    register: yum_task
+    become: no
+  - name: Check if YUM is installed
+    command: which yum
+    register: yum_command
+    failed_when: False
+    changed_when: False
+  - name: Running Yum Tasks
+    include_tasks: "{{ yum_task.stat.path }}"
+    when: yum_task.stat.exists and yum_command.rc == 0
+  - name: Mark as bootstrapped
+    copy:
+      content: "Bootstrapped"
+      dest: "/etc/demaria-bootstrap"
+      mode: 0400
